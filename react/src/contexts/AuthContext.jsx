@@ -9,14 +9,47 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let active = true;
     const storedToken = localStorage.getItem("auth_token");
-    const storedUser = localStorage.getItem("auth_user");
 
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
+    if (!storedToken) {
+      setLoading(false);
+      return () => {
+        active = false;
+      };
     }
-    setLoading(false);
+
+    // A token in localStorage is not proof of authentication. Validate it
+    // with the API before allowing protected dashboard routes to render.
+    api
+      .get("/user")
+      .then(({ data }) => {
+        if (!active) return;
+
+        setUser(data.user || data);
+        setToken(storedToken);
+      })
+      .catch((error) => {
+        if (!active) return;
+
+        localStorage.removeItem("auth_token");
+        localStorage.removeItem("auth_user");
+        setUser(null);
+        setToken(null);
+
+        if (error.response?.status !== 401) {
+          console.error("Session validation failed:", error);
+        }
+      })
+      .finally(() => {
+        if (active) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   const login = (userData, accessToken) => {
@@ -49,7 +82,7 @@ export const AuthProvider = ({ children }) => {
     user,
     token,
     loading,
-    isAuthenticated: !!token,
+    isAuthenticated: Boolean(token && user),
     login,
     logout,
     updateUser,

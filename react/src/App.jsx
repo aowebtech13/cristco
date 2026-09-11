@@ -36,7 +36,14 @@ function App() {
 
               <Routes>
                 <Route path="/">
-                  <Route index element={<HomePage />} />
+                  <Route
+                    index
+                    element={
+                      <ProtectedRoute>
+                        <HomePage />
+                      </ProtectedRoute>
+                    }
+                  />
 
                   <Route
                     path="dashboard-boxed"

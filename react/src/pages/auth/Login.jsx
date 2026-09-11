@@ -19,18 +19,17 @@ export default function Login() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState("");
 
-  const { login } = useAuth();
+  const { login, isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const from = location.state?.from?.pathname || "/dashboard-boxed";
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("auth_token");
-    if (storedToken) {
+    if (!loading && isAuthenticated) {
       navigate(from, { replace: true });
     }
-  }, [navigate, from]);
+  }, [loading, isAuthenticated, navigate, from]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

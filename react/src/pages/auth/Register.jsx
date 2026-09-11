@@ -25,15 +25,14 @@ export default function Register() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState("");
 
-  const { login } = useAuth();
+  const { login, isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("auth_token");
-    if (storedToken) {
+    if (!loading && isAuthenticated) {
       navigate("/dashboard-boxed", { replace: true });
     }
-  }, [navigate]);
+  }, [loading, isAuthenticated, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
