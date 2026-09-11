@@ -41,9 +41,5 @@ export const menuData = [
     icon: "icon-setting1",
     href: "/settings",
   },
-  {
-    title: "Component",
-    icon: "icon-search-normal1",
-    href: "/component",
-  },
+  
 ];

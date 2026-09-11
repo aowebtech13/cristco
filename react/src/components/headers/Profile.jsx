@@ -1,15 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 
 import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Profile() {
   const [showDD, setShowDD] = useState(false);
   const dropdownRef = useRef(null);
+  const { user, logout, isAuthenticated } = useAuth();
 
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowDD(false); // Run your close logic
+        setShowDD(false);
       }
     }
 
@@ -19,6 +21,25 @@ export default function Profile() {
       document.removeEventListener("click", handleClickOutside);
     };
   }, []);
+
+  const handleLogout = () => {
+    logout();
+    setShowDD(false);
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="header-grid">
+        <Link to="/login" className="tf-button style-1 f12-bold">
+          Sign In
+        </Link>
+        <Link to="/register" className="tf-button style-default f12-bold">
+          Sign Up
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="popup-wrap user type-header" ref={dropdownRef}>
       <div className="dropdown">
@@ -37,8 +58,12 @@ export default function Profile() {
               />
             </span>
             <span className="content flex flex-column">
-              <span className="label-02 text-Black name">Jonathan</span>
-              <span className="f14-regular text-Gray">Admin</span>
+              <span className="label-02 text-Black name">
+                {user?.name || "User"}
+              </span>
+              <span className="f14-regular text-Gray">
+                {user?.email || ""}
+              </span>
             </span>
           </span>
         </button>
@@ -76,9 +101,19 @@ export default function Profile() {
             </Link>
           </li>
           <li>
-            <Link to={`/sign-in`} className="user-item">
+            <button
+              onClick={handleLogout}
+              className="user-item"
+              style={{
+                background: "none",
+                border: "none",
+                width: "100%",
+                textAlign: "left",
+                cursor: "pointer",
+              }}
+            >
               <div className="body-title-2">Log out</div>
-            </Link>
+            </button>
           </li>
         </ul>
       </div>

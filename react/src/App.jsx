@@ -1,4 +1,5 @@
 import LayoutWrapper from "@/components/common/LayoutWrapper";
+import { AuthProvider } from "@/contexts/AuthContext";
 import "../public/scss/main.scss";
 import Offcanvas from "@/components/modals/Offcanvas";
 import HomePage from "./pages";
@@ -13,10 +14,14 @@ import CryptoPage from "./pages/crypto";
 import ExchangePage from "./pages/exchange";
 import SettingsPage from "./pages/settings";
 import ComponentPage from "./pages/component";
+import LoginPage from "./pages/auth/Login";
+import RegisterPage from "./pages/auth/Register";
+import VerifyEmailPage from "./pages/auth/VerifyEmail";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 function App() {
   return (
-    <>
+    <AuthProvider>
       <LayoutWrapper>
         <div id="wrapper">
           {/* #page */}
@@ -34,31 +39,97 @@ function App() {
 
                   <Route
                     path="dashboard-boxed"
-                    element={<DashboardPageBoxed />}
+                    element={
+                      <ProtectedRoute>
+                        <DashboardPageBoxed />
+                      </ProtectedRoute>
+                    }
                   />
                   <Route
                     path="dashboard-icon-hover"
-                    element={<DashboardPageIconHover />}
+                    element={
+                      <ProtectedRoute>
+                        <DashboardPageIconHover />
+                      </ProtectedRoute>
+                    }
                   />
                   <Route
                     path="dashboard-icon-default"
-                    element={<DashboardPageIconDefault />}
+                    element={
+                      <ProtectedRoute>
+                        <DashboardPageIconDefault />
+                      </ProtectedRoute>
+                    }
                   />
-                  <Route path="my-wallet" element={<MyWalletPage />} />
-                  <Route path="account" element={<AccountPage />} />
-                  <Route path="transaction" element={<TransectionPage />} />
-                  <Route path="crypto" element={<CryptoPage />} />
-                  <Route path="exchange" element={<ExchangePage />} />
-                  <Route path="settings" element={<SettingsPage />} />
-                  <Route path="component" element={<ComponentPage />} />
+                  <Route
+                    path="my-wallet"
+                    element={
+                      <ProtectedRoute>
+                        <MyWalletPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="account"
+                    element={
+                      <ProtectedRoute>
+                        <AccountPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="transaction"
+                    element={
+                      <ProtectedRoute>
+                        <TransectionPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="crypto"
+                    element={
+                      <ProtectedRoute>
+                        <CryptoPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="exchange"
+                    element={
+                      <ProtectedRoute>
+                        <ExchangePage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="settings"
+                    element={
+                      <ProtectedRoute>
+                        <SettingsPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="component"
+                    element={
+                      <ProtectedRoute>
+                        <ComponentPage />
+                      </ProtectedRoute>
+                    }
+                  />
                 </Route>
+
+                {/* Auth Routes - No Layout */}
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/verify-email" element={<VerifyEmailPage />} />
               </Routes>
             </div>
           </div>
           <Offcanvas />
         </div>
       </LayoutWrapper>
-    </>
+    </AuthProvider>
   );
 }
 

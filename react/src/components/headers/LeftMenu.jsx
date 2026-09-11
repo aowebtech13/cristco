@@ -194,7 +194,7 @@ export default function LeftMenu() {
           </div>
           <div className="content">
             <p className="f12-regular text-White">For more features</p>
-            <p className="f12-bold text-White">Upgrade to Pro</p>
+            <p className="f12-bold text-White">Contact Admin</p>
           </div>
         </div>
       </div>
