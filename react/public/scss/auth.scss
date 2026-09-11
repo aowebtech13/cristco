@@ -1,6 +1,20 @@
 @use "abstracts/mixin";
 @use "abstracts/variable";
 
+.forgot-link {
+  margin-left: auto;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--Primary);
+  text-decoration: none;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: #2a2a4a;
+    text-decoration: underline;
+  }
+}
+
 .auth-page {
   min-height: 100vh;
   display: flex;

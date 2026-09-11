@@ -229,7 +229,7 @@ export default function Register() {
                   </label>
                   <div className="password-field">
                     <input
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       id="password"
                       name="password"
                       className={`form-control ${errors.password ? "is-invalid" : ""}`}
@@ -237,6 +237,14 @@ export default function Register() {
                       value={formData.password}
                       onChange={handleChange}
                     />
+                    <button
+                      type="button"
+                      className="toggle-password"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                      <i className={`icon-${showPassword ? "view" : "hide"}`} />
+                    </button>
                   </div>
                   {errors.password && (
                     <div className="form-error">{errors.password}</div>
@@ -249,7 +257,7 @@ export default function Register() {
                   </label>
                   <div className="password-field">
                     <input
-                      type="password"
+                      type={showConfirmPassword ? "text" : "password"}
                       id="password_confirmation"
                       name="password_confirmation"
                       className={`form-control ${errors.password_confirmation ? "is-invalid" : ""}`}
@@ -257,6 +265,14 @@ export default function Register() {
                       value={formData.password_confirmation}
                       onChange={handleChange}
                     />
+                    <button
+                      type="button"
+                      className="toggle-password"
+                      onClick={() => setShowConfirmPassword((prev) => !prev)}
+                      aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                    >
+                      <i className={`icon-${showConfirmPassword ? "view" : "hide"}`} />
+                    </button>
                   </div>
                   {errors.password_confirmation && (
                     <div className="form-error">{errors.password_confirmation}</div>
