@@ -3,8 +3,8 @@ import SmallLineChart from "../charts/SmallLineChart";
 import { smallChartOptions2, smallChartOptions3 } from "@/data/chartOptions";
 import CryptoStatistics from "../charts/CryptoStatistics";
 
-import SellOrders from "./SellOrders";
 import BuyOrders from "./BuyOrders";
+import TransactionHistory from "./TransactionHistory";
 import MarketOverview from "./MarketOverview";
 
 export default function Home() {
@@ -266,10 +266,8 @@ export default function Home() {
               </div>
               <CryptoStatistics />
             </div>
-            <div className="flex gap24 mb-32 flex-md-row flex-column">
-              <SellOrders />
-              <BuyOrders />
-            </div>
+            <BuyOrders />
+            <TransactionHistory />
           </div>
         </div>
       </div>
