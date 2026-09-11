@@ -90,17 +90,22 @@ export default function Register() {
     setIsSubmitting(true);
     try {
       const response = await api.post("/register", formData);
-      login(response.user, response.access_token);
+      login(response.data.user, response.data.access_token);
       navigate("/verify-email", { replace: true });
     } catch (error) {
-      if (error.errors) {
+      const axiosErrors = error.response?.data?.errors;
+      if (axiosErrors) {
         const fieldErrors = {};
-        Object.entries(error.errors).forEach(([field, messages]) => {
+        Object.entries(axiosErrors).forEach(([field, messages]) => {
           fieldErrors[field] = Array.isArray(messages) ? messages[0] : messages;
         });
         setErrors(fieldErrors);
       }
-      setServerError(error.message || "Registration failed. Please try again.");
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Registration failed. Please try again.";
+      setServerError(message);
     } finally {
       setIsSubmitting(false);
     }

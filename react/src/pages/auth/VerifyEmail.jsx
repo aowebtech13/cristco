@@ -83,13 +83,17 @@ export default function VerifyEmail() {
       });
 
       setSuccessMessage("Email verified successfully! Redirecting...");
-      updateUser(response.user);
+      updateUser(response.data.user);
 
       setTimeout(() => {
         navigate("/dashboard-boxed", { replace: true });
       }, 1500);
     } catch (error) {
-      setServerError(error.message || "Verification failed. Please try again.");
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Verification failed. Please try again.";
+      setServerError(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -106,7 +110,11 @@ export default function VerifyEmail() {
       setSuccessMessage("Verification code resent! Please check your email.");
       setResendCooldown(60);
     } catch (error) {
-      setServerError(error.message || "Failed to resend code. Please try again.");
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to resend code. Please try again.";
+      setServerError(message);
     }
   };
 

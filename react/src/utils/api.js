@@ -1,37 +1,45 @@
+import axios from "axios";
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || "/api";
 
-async function request(endpoint, options = {}) {
-  const token = localStorage.getItem("auth_token");
+const apiClient = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  },
+});
 
-  const config = {
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      ...(token && { Authorization: `Bearer ${token}` }),
-    },
-    ...options,
-  };
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("auth_token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
-  if (config.body && typeof config.body === "object" && !(config.body instanceof FormData)) {
-    config.body = JSON.stringify(config.body);
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem("auth_token");
+      localStorage.removeItem("auth_user");
+      window.location.href = "/login";
+    }
+    return Promise.reject(error);
   }
-
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.message || "Something went wrong");
-  }
-
-  return data;
-}
+);
 
 export const api = {
-  get: (endpoint) => request(endpoint),
-  post: (endpoint, data) => request(endpoint, { method: "POST", body: data }),
-  put: (endpoint, data) => request(endpoint, { method: "PUT", body: data }),
-  delete: (endpoint) => request(endpoint, { method: "DELETE" }),
+  get: (endpoint, config = {}) => apiClient.get(endpoint, config),
+  post: (endpoint, data = {}, config = {}) =>
+    apiClient.post(endpoint, data, config),
+  put: (endpoint, data = {}, config = {}) =>
+    apiClient.put(endpoint, data, config),
+  delete: (endpoint, config = {}) => apiClient.delete(endpoint, config),
 };
 
 export default api;

@@ -1,15 +1,13 @@
+import { href } from "react-router-dom";
+
 export const menuData = [
   {
     id: 1,
     title: "Dashboard",
     icon: "icon-category",
-    hasChildren: true,
-    subMenu: [
-      { text: "Default", href: "/", active: true },
-      { text: "Boxed", href: "/dashboard-boxed" },
-      { text: "Icon Menu", href: "/dashboard-icon-hover" },
-      { text: "Icon & Text", href: "/dashboard-icon-default" },
-    ],
+    hasChildren: false,
+    href: "/"
+    
   },
   {
     id: 2,

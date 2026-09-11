@@ -64,10 +64,14 @@ export default function Login() {
     setIsSubmitting(true);
     try {
       const response = await api.post("/login", formData);
-      login(response.user, response.access_token);
+      login(response.data.user, response.data.access_token);
       navigate(from, { replace: true });
     } catch (error) {
-      setServerError(error.message || "Login failed. Please try again.");
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Login failed. Please try again.";
+      setServerError(message);
     } finally {
       setIsSubmitting(false);
     }
