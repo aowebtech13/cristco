@@ -9,6 +9,7 @@ import DashboardPageIconHover from "./pages/dashboard/dashboard-icon-hover";
 import DashboardPageIconDefault from "./pages/dashboard/dashboard-icon-default";
 import MyWalletPage from "./pages/my-wallet";
 import AccountPage from "./pages/account";
+import EditProfilePage from "./pages/account/EditProfile";
 import TransectionPage from "./pages/transaction";
 import CryptoPage from "./pages/crypto";
 import ExchangePage from "./pages/exchange";
@@ -74,6 +75,14 @@ function App() {
                     element={
                       <ProtectedRoute>
                         <AccountPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="account/edit"
+                    element={
+                      <ProtectedRoute>
+                        <EditProfilePage />
                       </ProtectedRoute>
                     }
                   />

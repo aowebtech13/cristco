@@ -2,8 +2,11 @@ import React from "react";
 import SmallLineChart from "../charts/SmallLineChart";
 import { smallChartOptions3, smallChartOptions5 } from "@/data/chartOptions";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Account() {
+  const { user } = useAuth();
+
   return (
     <div className="row">
       <div className="col-lg-4">
@@ -45,11 +48,10 @@ export default function Account() {
               />
             </div>
             <h6 className="name mb-2">
-              <a href="#">Jonathan Smith</a>
+              <a href="#">{user?.name || "User"}</a>
             </h6>
             <div className="join-time f12-medium text-Gray">
-              Join on
-              <span className="text-Black time">24March, 20120</span>
+              @{user?.username || "username"}
             </div>
             <div className="connect">
               <div className="f12-medium text-Gray">Connect with</div>
@@ -72,10 +74,10 @@ export default function Account() {
               </ul>
             </div>
           </div>
-          <a href="#" className="tf-button f12-bold w-100 bg-Gainsboro">
+          <Link to="/account/edit" className="tf-button f12-bold w-100 bg-Gainsboro">
             <i className="icon icon-edit" />
             Edit Profile
-          </a>
+          </Link>
         </div>
       </div>
       <div className="col-lg-8">
