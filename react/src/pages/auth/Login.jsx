@@ -19,17 +19,17 @@ export default function Login() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState("");
 
-  const { login, isAuthenticated, loading } = useAuth();
+  const { login, isAuthenticated, loading, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const from = location.state?.from?.pathname || "/dashboard-boxed";
 
   useEffect(() => {
-    if (!loading && isAuthenticated) {
+    if (!loading && isAuthenticated && user?.email_verified_at) {
       navigate(from, { replace: true });
     }
-  }, [loading, isAuthenticated, navigate, from]);
+  }, [loading, isAuthenticated, user, from]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
