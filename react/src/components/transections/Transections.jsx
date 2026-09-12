@@ -1,19 +1,130 @@
-import { transactions } from "@/data/transections";
-import React, { useEffect, useState } from "react";
-
+import React, { useEffect, useState, useCallback } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import api from "@/utils/api";
 import DropdownSelect from "../common/DropdownSelect";
+
+// Map API transaction type to coin info for display
+const TYPE_COIN_MAP = {
+  deposit: { name: "Bitcoin", img: "/images/item/coin-1.png" },
+  investment: { name: "Ethereum", img: "/images/item/coin-2.png" },
+  withdrawal: { name: "Monero", img: "/images/item/coin-3.png" },
+  referral_bonus: { name: "Bitcoin", img: "/images/item/coin-1.png" },
+  cancellation_refund: { name: "Monero", img: "/images/item/coin-3.png" },
+};
+
+// Map API status to component status format
+const STATUS_MAP = {
+  completed: { status: "COMPLETED", statusClass: "bg-YellowGreen" },
+  pending: { status: "PENDING", statusClass: "bg-LightGray" },
+  cancelled: { status: "CANCELED", statusClass: "bg-LightGray" },
+};
+
+// Default avatar for sender/receiver since API doesn't provide them
+const DEFAULT_AVATAR = "/images/avatar/user-3.png";
+const RECEIVER_AVATAR = "/images/avatar/user-4.png";
+
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+function formatTime(dateString) {
+  const date = new Date(dateString);
+  let hours = date.getHours();
+  const minutes = date.getMinutes();
+  const ampm = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12 || 12;
+  const mins = minutes < 10 ? `0${minutes}` : minutes;
+  return `${hours}.${mins} ${ampm}`;
+}
+
 export default function Transections() {
-  const [selected, setSelected] = useState([]);
-  const [sorted, setSorted] = useState(transactions);
+  const { isAuthenticated } = useAuth();
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterType, setFilterType] = useState("all");
   const [sortConfig, setSortConfig] = useState({ key: "id", direction: "asc" });
+  const [selected, setSelected] = useState([]);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  const fetchTransactions = useCallback(async () => {
+    if (!isAuthenticated) {
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const params = new URLSearchParams();
+      if (debouncedSearch) params.set("search", debouncedSearch);
+      if (filterType && filterType !== "all") params.set("type", filterType);
+
+      const queryString = params.toString();
+      const url = queryString ? `/transactions?${queryString}` : "/transactions";
+
+      const response = await api.get(url);
+      const apiTransactions = response.data.transactions?.data || [];
+
+      // Transform API response to match component's expected format
+      const transformed = apiTransactions.map((tx) => {
+        const typeCoin = TYPE_COIN_MAP[tx.type] || {
+          name: tx.type.replace("_", " "),
+          img: "/images/item/coin-1.png",
+        };
+        const statusMap = STATUS_MAP[tx.status] || {
+          status: tx.status?.toUpperCase() || "UNKNOWN",
+          statusClass: "bg-LightGray",
+        };
+
+        return {
+          id: `#${tx.id}`,
+          date: formatDate(tx.created_at),
+          time: formatTime(tx.created_at),
+          sender: { name: "You", img: DEFAULT_AVATAR },
+          receiver: {
+            name: tx.type.replace("_", " "),
+            img: RECEIVER_AVATAR,
+          },
+          coin: typeCoin,
+          amount: Math.abs(tx.amount),
+          status: statusMap.status,
+          statusClass: statusMap.statusClass,
+          checked: false,
+          type: tx.type,
+          description: tx.description,
+          method: tx.method,
+          reference: tx.reference,
+        };
+      });
+
+      setTransactions(transformed);
+    } catch (err) {
+      setError("Failed to load transactions");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }, [isAuthenticated, debouncedSearch, filterType]);
 
   useEffect(() => {
-    setSorted(transactions);
-  }, []);
-
-  useEffect(() => {
-    sortTransactions();
-  }, [sortConfig]);
+    fetchTransactions();
+  }, [fetchTransactions]);
 
   const handleSort = (key, direction) => {
     setSortConfig((prev) => ({
@@ -33,7 +144,6 @@ export default function Transections() {
       let valA = a[key];
       let valB = b[key];
 
-      // Special handling
       if (key === "id") {
         valA = parseInt(a.id.replace("#", ""));
         valB = parseInt(b.id.replace("#", ""));
@@ -53,8 +163,67 @@ export default function Transections() {
       return 0;
     });
 
-    setSorted(sortedData);
+    setTransactions(sortedData);
   };
+
+  useEffect(() => {
+    sortTransactions();
+  }, [sortConfig]);
+
+  if (!isAuthenticated) {
+    return (
+      <div className="main-content-wrap">
+        <div className="tf-container">
+          <div className="table-list-transaction">
+            <div className="text-center py-5">
+              <p className="f12-medium text-Gray">
+                Please login to view your transactions
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="main-content-wrap">
+        <div className="tf-container">
+          <div className="table-list-transaction">
+            <div className="text-center py-5">
+              <div className="spinner" style={{ margin: "0 auto" }} />
+              <p className="f12-medium text-Gray mt-16">Loading transactions...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="main-content-wrap">
+        <div className="tf-container">
+          <div className="table-list-transaction">
+            <div className="text-center py-5">
+              <div className="auth-alert auth-alert-error">
+                <i className="icon-error" />
+                {error}
+              </div>
+              <button
+                className="tf-button style-2 mt-16"
+                onClick={fetchTransactions}
+              >
+                <i className="icon icon-refresh" />
+                Retry
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="main-content-wrap">
@@ -71,7 +240,8 @@ export default function Transections() {
                 className="show-search style-1"
                 name="name"
                 tabIndex={2}
-                defaultValue=""
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 aria-required="true"
                 required
               />
@@ -82,6 +252,21 @@ export default function Transections() {
               </button>
             </div>
           </form>
+          <div className="filter-type-dropdown" style={{ marginRight: '12px' }}>
+            <select
+              className="form-select form-select-sm d-inline-block w-auto"
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value)}
+              style={{ height: '38px', borderRadius: '6px', border: '1px solid #e5e7eb' }}
+            >
+              <option value="all">All Types</option>
+              <option value="deposit">Deposit</option>
+              <option value="investment">Investment</option>
+              <option value="withdrawal">Withdrawal</option>
+              <option value="referral_bonus">Referral Bonus</option>
+              <option value="cancellation_refund">Cancellation</option>
+            </select>
+          </div>
           <div className="right">
             <a href="#" className="tf-button style-2 f12-bold d-md-flex d-none">
               <i className="icon icon-receive-square" />
@@ -353,7 +538,7 @@ export default function Transections() {
           </div>
           <table className="list-transaction-content content-sort w-100">
             <tbody>
-              {sorted.map((tx, index) => (
+              {transactions.map((tx, index) => (
                 <tr
                   key={index}
                   className={`tf-table-item ${
