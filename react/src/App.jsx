@@ -1,7 +1,6 @@
 import LayoutWrapper from "@/components/common/LayoutWrapper";
 import { AuthProvider } from "@/contexts/AuthContext";
 import "../public/scss/main.scss";
-import Offcanvas from "@/components/modals/Offcanvas";
 import HomePage from "./pages";
 import { Route, Routes } from "react-router-dom";
 import DashboardPageBoxed from "./pages/dashboard/dashboard-boxed";
@@ -142,7 +141,6 @@ function App() {
               </Routes>
             </div>
           </div>
-          <Offcanvas />
         </div>
       </LayoutWrapper>
     </AuthProvider>

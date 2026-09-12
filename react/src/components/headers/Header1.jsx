@@ -41,13 +41,7 @@ export default function Header1() {
           <Profile />
           <div className="divider" />
 
-          <div
-            className="setting cursor-pointer"
-            data-bs-toggle="offcanvas"
-            data-bs-target="#offcanvasRight"
-          >
-            <i className="icon-setting1" />
-          </div>
+        
         </div>
       </div>
     </div>

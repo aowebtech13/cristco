@@ -1,6 +1,5 @@
 import LayoutWrapper from "@/components/common/LayoutWrapper";
 import "../public/scss/main.scss";
-import Offcanvas from "@/components/modals/Offcanvas";
 
 export default function RootLayout({ children }) {
   return (
@@ -19,7 +18,6 @@ export default function RootLayout({ children }) {
                 {children}
               </div>
             </div>
-            <Offcanvas />
           </div>
         </LayoutWrapper>
       </body>
