@@ -404,19 +404,23 @@ export default function Exchange() {
                   </div>
                 </div>
 
-                <DropdownSelect
-                  options={[
-                    {
-                      label: "45,662.05 Dash",
-                      thumbnail: "/images/item/bitcoin-1.png",
-                    },
-                    {
-                      label: "40,662.05 Dash",
-                      thumbnail: "/images/item/dashcoin.png",
-                    },
-                  ]}
-                  parentClass="image-select center style-white type-2 image-w-20"
-                />
+                  <DropdownSelect
+                    options={[
+                      { label: "Intesa Sanpaolo" },
+                      { label: "UniCredit" },
+                      { label: "Banca Mediolanum" },
+                      { label: "BNL - Banca Nazionale del Lavoro" },
+                      { label: "Banco BPM" },
+                      { label: "Cassa Depositi e Prestiti" },
+                      { label: "UBI Banca" },
+                      { label: "Banca Carige" },
+                      { label: "Credito Valtellinese (Creval)" },
+                      { label: "Banca Sella" },
+                      { label: "Banca IFIS" },
+                      { label: "Credito Emiliano" },
+                    ]}
+                    parentClass="image-select center style-white type-2 image-w-20"
+                  />
               </div>
               <div className="quick-trade-wrap">
                 <div className="quick-trade-list">
