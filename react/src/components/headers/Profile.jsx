@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function Profile() {
   const [showDD, setShowDD] = useState(false);
   const dropdownRef = useRef(null);
+  const navigate = useNavigate();
   const { user, logout, isAuthenticated } = useAuth();
 
   useEffect(() => {
@@ -22,9 +23,10 @@ export default function Profile() {
     };
   }, []);
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     setShowDD(false);
+    navigate("/login", { replace: true });
   };
 
   if (!isAuthenticated) {
