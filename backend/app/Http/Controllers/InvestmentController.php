@@ -1,4 +1,4 @@
-it<?php
+<?php
 
 namespace App\Http\Controllers;
 
@@ -91,6 +91,15 @@ class InvestmentController extends Controller
 
                 // Total amount withdrawn by this user.
                 'total_withdrawn' => $user->withdrawals()->sum('amount'),
+
+                // Total deposit amount by this user.
+                'total_deposits' => $user->transactions()
+                    ->where('type', 'deposit')
+                    ->where('status', 'completed')
+                    ->sum('amount'),
+
+                // Total transaction count by this user.
+                'total_transaction_count' => $user->transactions()->count(),
             ],
             'recent_transactions' => $user->transactions,
             'active_investments' => $user->investments()->where('status', 'active')->with('plan')->get(),

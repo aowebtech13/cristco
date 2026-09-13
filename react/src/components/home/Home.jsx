@@ -288,7 +288,6 @@ export default function Home() {
               </div>
               <CryptoStatistics />
             </div>
-            <BuyOrders />
             <TransactionHistory />
           </div>
         </div>

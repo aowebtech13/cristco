@@ -1,11 +1,58 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import SmallLineChart from "../charts/SmallLineChart";
-import { smallChartOptions3, smallChartOptions5 } from "@/data/chartOptions";
+import {
+  smallChartOptions2,
+  smallChartOptions3,
+  smallChartOptions5,
+  smallChartSeries,
+} from "@/data/chartOptions";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import api from "@/utils/api";
 
 export default function Account() {
   const { user } = useAuth();
+  const [dashboardData, setDashboardData] = useState(null);
+  const [investments, setInvestments] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api
+      .get("/dashboard-data")
+      .then(({ data }) => {
+        setDashboardData(data.stats);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch dashboard data:", error);
+      });
+
+    api
+      .get("/investments")
+      .then(({ data }) => {
+        setInvestments(data.investments || []);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch investments:", error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  const balance = dashboardData?.balance ?? 0;
+  const totalProfit = dashboardData?.total_profit ?? 0;
+  const totalInvested = dashboardData?.total_invested ?? 0;
+  const totalWithdrawn = dashboardData?.total_withdrawn ?? 0;
+  const totalDeposits = dashboardData?.total_deposits ?? 0;
+  const totalTransactions = dashboardData?.total_transaction_count ?? 0;
+  const activeInvestmentsCount = dashboardData?.active_investments_count ?? 0;
+  const totalReferralEarnings = dashboardData?.total_referral_earnings ?? 0;
+
+  const formatNumber = (num) =>
+    new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(num);
 
   return (
     <div className="row">
@@ -81,8 +128,32 @@ export default function Account() {
         </div>
       </div>
       <div className="col-lg-8">
-        <div className="flex justify-between items-center mb-24 mt-24">
-          <h6 className="">Card Holding</h6>
+        {loading ? (
+          <div className="text-center py-4">
+            <div className="spinner" style={{ margin: "0 auto" }} />
+          </div>
+        ) : (
+          <>
+            <div className="flex gap16 mb-16 flex-wrap">
+              <div className="wg-card style-1 bg-YellowGreen p-16 flex-1" style={{ minWidth: "140px" }}>
+                <div className="f12-medium text-Gray">Total Withdrawal</div>
+                <div className="f14-bold mt-4">
+                  {formatNumber(totalWithdrawn)}
+                </div>
+              </div>
+              <div className="wg-card style-1 bg-White p-16 flex-1" style={{ minWidth: "140px" }}>
+                <div className="f12-medium text-Gray">Total Deposit</div>
+                <div className="f14-bold text-Green mt-4">
+                  {formatNumber(totalDeposits)}
+                </div>
+              </div>
+              <div className="wg-card style-1 bg-White p-16 flex-1" style={{ minWidth: "140px" }}>
+                <div className="f12-medium text-Gray">Total Transactions</div>
+                <div className="f14-bold mt-4">{totalTransactions}</div>
+              </div>
+            </div>
+            <div className="flex justify-between items-center mb-24 mt-24">
+              <h6 className="">Card Holding</h6>
           <div className="dropdown default">
             <button
               className="btn btn-secondary dropdown-toggle"
@@ -101,6 +172,12 @@ export default function Account() {
                 <a href="#">This Day</a>
               </li>
             </ul>
+          </div>
+        </div>
+        <div className="wg-card style-1 bg-Primary p-16 mb-16">
+          <div className="f12-medium text-White">Available Balance</div>
+          <div className="f14-bold text-White mt-4">
+            {formatNumber(balance)}
           </div>
         </div>
         <div className="flex gap24 flex-md-row flex-column mb-16 row-gap-0">
@@ -305,7 +382,9 @@ export default function Account() {
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </>
+    )}
+  </div>
+</div>
   );
 }
