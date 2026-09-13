@@ -11,10 +11,19 @@ import { useAuth } from "@/contexts/AuthContext";
 import api from "@/utils/api";
 
 export default function Account() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [dashboardData, setDashboardData] = useState(null);
   const [investments, setInvestments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(null);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+
+  useEffect(() => {
+    if (user?.avatar) {
+      setAvatarPreview(user.avatar);
+    }
+  }, [user?.avatar]);
 
   useEffect(() => {
     api
@@ -68,14 +77,7 @@ export default function Account() {
             >
               <span className="icon-more text-White" />
             </button>
-            <ul className="dropdown-menu dropdown-menu-end">
-              <li>
-                <Link to={`/my-wallet`}>My Wallet</Link>
-              </li>
-              <li>
-                <Link to={`/settings`}>Setting</Link>
-              </li>
-            </ul>
+           
           </div>
           <div className="image-bg">
             <img
@@ -89,10 +91,62 @@ export default function Account() {
             <div className="avatar">
               <img
                 alt=""
-                src="/images/avatar/user-2.png"
+                src={avatarPreview || user?.avatar || "/images/avatar/user-2.png"}
                 width={194}
                 height={193}
               />
+            </div>
+            <div className="avatar-upload">
+              <input
+                type="file"
+                id="avatar-upload"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    setAvatarFile(file);
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                      setAvatarPreview(reader.result);
+                    };
+                    reader.readAsDataURL(file);
+                  }
+                }}
+                style={{ display: "none" }}
+              />
+              <button
+                type="button"
+                className="tf-button f12-bold w-100 bg-Gainsboro"
+                onClick={async () => {
+                  document.getElementById("avatar-upload").click();
+                }}
+              >
+                <i className="icon icon-upload" />
+                Change Avatar
+              </button>
+              {avatarFile && (
+                <button
+                  type="button"
+                  className="tf-button f12-bold w-100 bg-Primary text-White mt-8"
+                  onClick={async () => {
+                    setAvatarUploading(true);
+                    try {
+                      const formData = new FormData();
+                      formData.append("avatar", avatarFile);
+                      const response = await api.post("/profile", formData);
+                      updateUser(response.data.user);
+                      setAvatarFile(null);
+                    } catch (error) {
+                      console.error("Failed to upload avatar:", error);
+                    } finally {
+                      setAvatarUploading(false);
+                    }
+                  }}
+                  disabled={avatarUploading}
+                >
+                  {avatarUploading ? "Uploading..." : "Upload"}
+                </button>
+              )}
             </div>
             <h6 className="name mb-2">
               <a href="#">{user?.name || "User"}</a>
@@ -134,24 +188,6 @@ export default function Account() {
           </div>
         ) : (
           <>
-            <div className="flex gap16 mb-16 flex-wrap">
-              <div className="wg-card style-1 bg-YellowGreen p-16 flex-1" style={{ minWidth: "140px" }}>
-                <div className="f12-medium text-Gray">Total Withdrawal</div>
-                <div className="f14-bold mt-4">
-                  {formatNumber(totalWithdrawn)}
-                </div>
-              </div>
-              <div className="wg-card style-1 bg-White p-16 flex-1" style={{ minWidth: "140px" }}>
-                <div className="f12-medium text-Gray">Total Deposit</div>
-                <div className="f14-bold text-Green mt-4">
-                  {formatNumber(totalDeposits)}
-                </div>
-              </div>
-              <div className="wg-card style-1 bg-White p-16 flex-1" style={{ minWidth: "140px" }}>
-                <div className="f12-medium text-Gray">Total Transactions</div>
-                <div className="f14-bold mt-4">{totalTransactions}</div>
-              </div>
-            </div>
             <div className="flex justify-between items-center mb-24 mt-24">
               <h6 className="">Card Holding</h6>
           <div className="dropdown default">
@@ -174,12 +210,6 @@ export default function Account() {
             </ul>
           </div>
         </div>
-        <div className="wg-card style-1 bg-Primary p-16 mb-16">
-          <div className="f12-medium text-White">Available Balance</div>
-          <div className="f14-bold text-White mt-4">
-            {formatNumber(balance)}
-          </div>
-        </div>
         <div className="flex gap24 flex-md-row flex-column mb-16 row-gap-0">
           <div className="w-100">
             <div className="wg-card style-1 bg-YellowGreen bg-5 mb-16">
@@ -199,11 +229,11 @@ export default function Account() {
                     fill="black"
                   />
                 </svg>
-                <div className="f12-bold">Bit Coin</div>
+                <div className="f12-bold">Available Balance</div>
               </div>
               <div className="content">
                 <div className="flex gap2 align-items-end flex-wrap">
-                  <h6 className="mb-0">$48.200,00</h6>
+                  <h6 className="mb-0">{formatNumber(balance)}</h6>
                   <div className="f12-medium">
                     +4%
                     <span className="text-GrayDark">This Week</span>
@@ -216,6 +246,7 @@ export default function Account() {
                 </div>
               </div>
               <div className="bottom">
+               
                 <div className="infor-number">
                   <div className="flex gap4 f12-medium">
                     <span className="text-GrayDark">Buy</span>
@@ -223,7 +254,7 @@ export default function Account() {
                   </div>
                   <div className="flex gap8 f12-medium">
                     <span className="text-GrayDark">Sell</span>
-                    <span className="">$563,443</span>
+                    <span className="">$563,543</span>
                   </div>
                 </div>
                 <a href="#" className="tf-btn-default f12-bold style-1">
@@ -249,11 +280,11 @@ export default function Account() {
                     fill="black"
                   />
                 </svg>
-                <div className="f12-bold">Dash Coin</div>
+                <div className="f12-bold">Total Withdrawal</div>
               </div>
               <div className="content">
                 <div className="flex gap2 align-items-end flex-wrap">
-                  <h6 className="mb-0">$48.200,00</h6>
+                  <h6 className="mb-0">{formatNumber(totalWithdrawn)}</h6>
                   <div className="f12-medium">
                     +4%
                     <span className="text-GrayDark">This Week</span>
@@ -264,6 +295,7 @@ export default function Account() {
                 </div>
               </div>
               <div className="bottom">
+             
                 <div className="infor-number">
                   <div className="flex gap4 f12-medium">
                     <span className="text-GrayDark">Buy</span>
@@ -299,11 +331,11 @@ export default function Account() {
                     fill="#161326"
                   />
                 </svg>
-                <div className="f12-bold">Wave</div>
+                <div className="f12-bold">Total Deposit</div>
               </div>
               <div className="content">
                 <div className="flex gap2 align-items-end flex-wrap">
-                  <h6 className="mb-0">$48.200,00</h6>
+                  <h6 className="mb-0">{formatNumber(totalDeposits)}</h6>
                   <div className="f12-medium">
                     +4%
                     <span className="text-GrayDark">This Week</span>
@@ -316,6 +348,7 @@ export default function Account() {
                 </div>
               </div>
               <div className="bottom">
+             
                 <div className="infor-number">
                   <div className="flex gap4 f12-medium">
                     <span className="text-GrayDark">Buy</span>
@@ -347,11 +380,11 @@ export default function Account() {
                     fill="#161326"
                   />
                 </svg>
-                <div className="f12-bold text-White">Peer Coin</div>
+                <div className="f12-bold text-White">Total Transactions</div>
               </div>
               <div className="content">
                 <div className="flex gap2 align-items-end flex-wrap">
-                  <h6 className="mb-0 text-White">$48.200,00</h6>
+                  <h6 className="mb-0 text-White">{totalTransactions}</h6>
                   <div className="f12-medium text-White">
                     +4%
                     <span className="text-GrayDark">This Week</span>
@@ -364,6 +397,7 @@ export default function Account() {
                 </div>
               </div>
               <div className="bottom">
+          
                 <div className="infor-number">
                   <div className="flex gap4 f12-medium">
                     <span className="text-GrayDark">Buy</span>

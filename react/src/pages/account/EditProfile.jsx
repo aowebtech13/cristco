@@ -110,11 +110,7 @@ export default function EditProfile() {
         submitData.append("avatar", avatarFile);
       }
 
-      const response = await api.post("/profile", submitData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await api.post("/profile", submitData);
 
       setSuccessMessage("Profile updated successfully!");
       updateUser(response.data.user);
