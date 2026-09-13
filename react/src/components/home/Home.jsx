@@ -1,13 +1,35 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import SmallLineChart from "../charts/SmallLineChart";
 import { smallChartOptions2, smallChartOptions3 } from "@/data/chartOptions";
 import CryptoStatistics from "../charts/CryptoStatistics";
 
-import BuyOrders from "./BuyOrders";
 import TransactionHistory from "./TransactionHistory";
 import MarketOverview from "./MarketOverview";
+import api from "@/utils/api";
 
 export default function Home() {
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api
+      .get("/dashboard-data")
+      .then(({ data }) => {
+        setDashboardData(data.stats);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch dashboard data:", error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  const balance = dashboardData?.balance ?? 0;
+  const totalInvested = dashboardData?.total_invested ?? 0;
+  const totalWithdrawn = dashboardData?.total_withdrawn ?? 0;
+  const totalProfit = dashboardData?.total_profit ?? 0;
+
   return (
     <div className="main-content-wrap">
       <div className="tf-container">
@@ -40,12 +62,12 @@ export default function Home() {
                         <span
                           className="number"
                           data-speed={2000}
-                          data-to={34}
+                          data-to={Math.floor(balance)}
                           data-inviewport="yes"
                         >
-                          34
+                          {Math.floor(balance)}
                         </span>
-                        ,57
+                        ,{String(Math.round(balance * 100) % 100).padStart(2, "0")}
                       </h6>
                       <div className="f12-medium text-White">
                         +4% <span className="text-White">(30 days)</span>
@@ -83,12 +105,12 @@ export default function Home() {
                         <span
                           className="number"
                           data-speed={2000}
-                          data-to={54}
+                          data-to={Math.floor(totalInvested)}
                           data-inviewport="yes"
                         >
-                          54
+                          {Math.floor(totalInvested)}
                         </span>
-                        ,57
+                        ,{String(Math.round(totalInvested * 100) % 100).padStart(2, "0")}
                       </h6>
                       <div className="f12-medium">
                         +4% <span className="text-Gray">(30 days)</span>
@@ -128,12 +150,12 @@ export default function Home() {
                         <span
                           className="number"
                           data-speed={2000}
-                          data-to={14}
+                          data-to={Math.floor(totalWithdrawn)}
                           data-inviewport="yes"
                         >
-                          14
+                          {Math.floor(totalWithdrawn)}
                         </span>
-                        ,47
+                        ,{String(Math.round(totalWithdrawn * 100) % 100).padStart(2, "0")}
                       </h6>
                       <div className="f12-medium">
                         +4% <span className="text-Gray">(30 days)</span>
@@ -169,12 +191,12 @@ export default function Home() {
                         <span
                           className="number"
                           data-speed={2000}
-                          data-to={34}
+                          data-to={Math.floor(totalProfit)}
                           data-inviewport="yes"
                         >
-                          34
+                          {Math.floor(totalProfit)}
                         </span>
-                        ,57
+                        ,{String(Math.round(totalProfit * 100) % 100).padStart(2, "0")}
                       </h6>
                       <div className="f12-medium">
                         +4% <span className="text-Gray">(30 days)</span>

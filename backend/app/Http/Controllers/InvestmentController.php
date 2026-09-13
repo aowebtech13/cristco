@@ -1,4 +1,4 @@
-<?php
+it<?php
 
 namespace App\Http\Controllers;
 
@@ -77,7 +77,7 @@ class InvestmentController extends Controller
         }]);
 
         return response()->json([
-'stats' => [
+            'stats' => [
                 'balance' => $user->balance,
                 'total_profit' => $user->total_profit,
                 'total_invested' => $user->total_invested,
@@ -88,6 +88,9 @@ class InvestmentController extends Controller
                     ->where('type', 'referral_bonus')
                     ->where('status', 'completed')
                     ->sum('amount'),
+
+                // Total amount withdrawn by this user.
+                'total_withdrawn' => $user->withdrawals()->sum('amount'),
             ],
             'recent_transactions' => $user->transactions,
             'active_investments' => $user->investments()->where('status', 'active')->with('plan')->get(),
