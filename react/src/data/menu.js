@@ -25,6 +25,11 @@ export const menuData = [
     href: "/transaction",
   },
   {
+    title: "Withdraw",
+    icon: "icon-wallet1",
+    href: "/withdraw",
+  },
+  {
     title: "Crypto",
     icon: "icon-dash1",
     href: "/crypto",

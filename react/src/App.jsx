@@ -10,6 +10,7 @@ import MyWalletPage from "./pages/my-wallet";
 import AccountPage from "./pages/account";
 import EditProfilePage from "./pages/account/EditProfile";
 import TransectionPage from "./pages/transaction";
+import WithdrawPage from "./pages/withdraw";
 import CryptoPage from "./pages/crypto";
 import ExchangePage from "./pages/exchange";
 import SettingsPage from "./pages/settings";
@@ -97,6 +98,14 @@ function App() {
                     element={
                       <ProtectedRoute>
                         <TransectionPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="withdraw"
+                    element={
+                      <ProtectedRoute>
+                        <WithdrawPage />
                       </ProtectedRoute>
                     }
                   />

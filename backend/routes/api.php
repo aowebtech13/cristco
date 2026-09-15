@@ -41,6 +41,7 @@ Route::middleware(['throttle:api'])->group(function () {
         });
         Route::get('/dashboard-data', [InvestmentController::class, 'getDashboardData']);
         Route::get('/transactions', [InvestmentController::class, 'getTransactions']);
+        Route::get('/transactions/download', [InvestmentController::class, 'downloadTransactions']);
         Route::get('/investments', [InvestmentController::class, 'getInvestments']);
         Route::post('/investments/{id}/cancel', [InvestmentController::class, 'cancelInvestment'])->middleware('throttle:transactions');
         Route::post('/invest', [InvestmentController::class, 'invest'])->middleware('throttle:transactions');

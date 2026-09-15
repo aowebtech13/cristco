@@ -9,6 +9,7 @@ use App\Models\Investment;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Response;
 
 class InvestmentController extends Controller
 {
@@ -152,6 +153,58 @@ class InvestmentController extends Controller
                 'net_flow' => $inflows + $outflows,
             ]
         ]);
+    }
+
+    /**
+     * Download the user's transaction history as a CSV file.
+     * Supports the same search and type filters as getTransactions.
+     */
+    public function downloadTransactions(Request $request)
+    {
+        $user = Auth::user();
+        $query = $user->transactions()->latest();
+
+        // Search
+        if ($request->search) {
+            $query->where(function($q) use ($request) {
+                $q->where('description', 'like', "%{$request->search}%")
+                  ->orWhere('type', 'like', "%{$request->search}%")
+                  ->orWhere('id', 'like', "%{$request->search}%");
+            });
+        }
+
+        // Filter by type
+        if ($request->type && $request->type !== 'all') {
+            $query->where('type', 'like', "%{$request->type}%");
+        }
+
+        $transactions = $query->get();
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="transaction-history-' . now()->format('Y-m-d') . '.csv"',
+        ];
+
+        $callback = function() use ($transactions) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, ['ID', 'Date', 'Type', 'Amount', 'Status', 'Method', 'Description']);
+
+            foreach ($transactions as $tx) {
+                fputcsv($file, [
+                    $tx->id,
+                    $tx->created_at ? $tx->created_at->format('Y-m-d H:i:s') : '',
+                    $tx->type,
+                    $tx->amount,
+                    $tx->status,
+                    $tx->method ?? '',
+                    $tx->description ?? '',
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return Response::stream($callback, 200, $headers);
     }
 
     public function getInvestments()

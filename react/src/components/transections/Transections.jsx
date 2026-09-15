@@ -52,6 +52,7 @@ export default function Transections() {
   const [sortConfig, setSortConfig] = useState({ key: "id", direction: "asc" });
   const [selected, setSelected] = useState([]);
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [downloading, setDownloading] = useState(false);
 
   // Debounce search input
   useEffect(() => {
@@ -121,6 +122,40 @@ export default function Transections() {
       setLoading(false);
     }
   }, [isAuthenticated, debouncedSearch, filterType]);
+
+  const downloadTransactions = async () => {
+    if (!isAuthenticated) return;
+
+    setDownloading(true);
+    try {
+      const params = new URLSearchParams();
+      if (debouncedSearch) params.set("search", debouncedSearch);
+      if (filterType && filterType !== "all") params.set("type", filterType);
+
+      const queryString = params.toString();
+      const url = queryString
+        ? `/transactions/download?${queryString}`
+        : "/transactions/download";
+
+      const response = await api.get(url, {
+        responseType: "blob",
+      });
+
+      const blob = new Blob([response.data], { type: "text/csv" });
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = `transaction-history-${new Date().toISOString().split("T")[0]}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+    } catch (error) {
+      console.error("Failed to download transactions:", error);
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   useEffect(() => {
     fetchTransactions();
@@ -268,10 +303,14 @@ export default function Transections() {
             </select>
           </div>
           <div className="right">
-            <a href="#" className="tf-button style-2 f12-bold d-md-flex d-none">
+            <button
+              className="tf-button style-2 f12-bold d-md-flex d-none"
+              onClick={downloadTransactions}
+              disabled={downloading}
+            >
               <i className="icon icon-receive-square" />
-              Get Report
-            </a>
+              {downloading ? "Downloading..." : "Download History"}
+            </button>
             <div className="dropdown default style-fill">
               <button
                 className="btn btn-secondary dropdown-toggle"
