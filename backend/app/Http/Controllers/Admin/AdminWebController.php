@@ -12,8 +12,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 use App\Mail\AdminResetToken;
+use App\Mail\WithdrawalStatusMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
@@ -395,6 +397,24 @@ public function showUser($id)
                 'status' => 'completed',
                 'description' => "Withdrawal request #{$withdrawal->id} was {$request->status}",
             ]);
+
+            // Notify the user by email about the withdrawal status change.
+            try {
+                Mail::to($withdrawal->user->email)->send(
+                    new WithdrawalStatusMail(
+                        $withdrawal->user,
+                        $withdrawal,
+                        $request->status,
+                        $request->rejection_reason
+                    )
+                );
+            } catch (\Exception $e) {
+                Log::warning('Withdrawal status email failed to send', [
+                    'withdrawal_id' => $withdrawal->id,
+                    'user_id' => $withdrawal->user_id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
         });
 
         return back()->with('success', "Withdrawal {$request->status} successfully.");

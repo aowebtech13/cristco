@@ -870,3 +870,28 @@
   flex-direction: column;
   gap: 20px;
 }
+
+.withdraw-page {
+  h6 {
+    font-size: 21px !important;
+    line-height: 28px !important;
+  }
+  h4 {
+    font-size: 27px !important;
+    line-height: 34px !important;
+  }
+  .f12-bold,
+  .f12-medium,
+  .f12-regular {
+    font-size: 15px !important;
+    line-height: 19px !important;
+  }
+  .form-label {
+    font-size: 17px !important;
+    line-height: 24px !important;
+  }
+  .wg-card .content h6 {
+    font-size: 21px !important;
+    line-height: 28px !important;
+  }
+}
