@@ -69,14 +69,7 @@ function App() {
                       </ProtectedRoute>
                     }
                   />
-                  <Route
-                    path="my-wallet"
-                    element={
-                      <ProtectedRoute>
-                        <MyWalletPage />
-                      </ProtectedRoute>
-                    }
-                  />
+                
                   <Route
                     path="account"
                     element={

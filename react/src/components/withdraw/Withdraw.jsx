@@ -154,7 +154,7 @@ export default function Withdraw() {
   };
 
   return (
-    <div className="main-content-wrap">
+    <div className="main-content-wrap withdraw-page">
       <div className="tf-container">
         <div className="flex justify-between items-center mb-24 mt-24">
           <h6>Withdraw Funds</h6>

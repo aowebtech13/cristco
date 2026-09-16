@@ -156,9 +156,7 @@ export default function EditProfile() {
                     <span className="icon-more text-White" />
                   </button>
                   <ul className="dropdown-menu dropdown-menu-end">
-                    <li>
-                      <Link to={`/my-wallet`}>My Wallet</Link>
-                    </li>
+                   
                     <li>
                       <Link to={`/settings`}>Setting</Link>
                     </li>
