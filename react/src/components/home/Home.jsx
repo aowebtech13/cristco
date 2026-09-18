@@ -7,6 +7,14 @@ import TransactionHistory from "./TransactionHistory";
 import MarketOverview from "./MarketOverview";
 import api from "@/utils/api";
 
+const formatMoney = (value) => {
+  const num = Number(value) || 0;
+  const intPart = Math.floor(num);
+  const decPart = String(Math.round(num * 100) % 100).padStart(2, "0");
+  const formattedInt = intPart.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return `${formattedInt},${decPart}`;
+};
+
 export default function Home() {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -65,9 +73,8 @@ export default function Home() {
                           data-to={Math.floor(balance)}
                           data-inviewport="yes"
                         >
-                          {Math.floor(balance)}
+                          {formatMoney(balance)}
                         </span>
-                        ,{String(Math.round(balance * 100) % 100).padStart(2, "0")}
                       </h6>
                       <div className="f12-medium text-White">
                         +4% <span className="text-White">(30 days)</span>
@@ -108,9 +115,8 @@ export default function Home() {
                           data-to={Math.floor(totalInvested)}
                           data-inviewport="yes"
                         >
-                          {Math.floor(totalInvested)}
+                          {formatMoney(totalInvested)}
                         </span>
-                        ,{String(Math.round(totalInvested * 100) % 100).padStart(2, "0")}
                       </h6>
                       <div className="f12-medium">
                         +4% <span className="text-Gray">(30 days)</span>
@@ -153,9 +159,8 @@ export default function Home() {
                           data-to={Math.floor(totalWithdrawn)}
                           data-inviewport="yes"
                         >
-                          {Math.floor(totalWithdrawn)}
+                          {formatMoney(totalWithdrawn)}
                         </span>
-                        ,{String(Math.round(totalWithdrawn * 100) % 100).padStart(2, "0")}
                       </h6>
                       <div className="f12-medium">
                         +4% <span className="text-Gray">(30 days)</span>
@@ -194,9 +199,8 @@ export default function Home() {
                           data-to={Math.floor(totalProfit)}
                           data-inviewport="yes"
                         >
-                          {Math.floor(totalProfit)}
+                          {formatMoney(totalProfit)}
                         </span>
-                        ,{String(Math.round(totalProfit * 100) % 100).padStart(2, "0")}
                       </h6>
                       <div className="f12-medium">
                         +4% <span className="text-Gray">(30 days)</span>
