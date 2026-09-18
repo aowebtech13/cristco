@@ -11,8 +11,10 @@ const formatMoney = (value) => {
   const num = Number(value) || 0;
   const intPart = Math.floor(num);
   const decPart = String(Math.round(num * 100) % 100).padStart(2, "0");
-  const formattedInt = intPart.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  return `${formattedInt},${decPart}`;
+  const formattedInt = intPart
+    .toString()
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return `${formattedInt}.${decPart}`;
 };
 
 export default function Home() {
