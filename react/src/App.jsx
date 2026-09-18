@@ -18,6 +18,7 @@ import ComponentPage from "./pages/component";
 import LoginPage from "./pages/auth/Login";
 import RegisterPage from "./pages/auth/Register";
 import VerifyEmailPage from "./pages/auth/VerifyEmail";
+import ForgotPasswordPage from "./pages/auth/ForgotPassword";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 function App() {
@@ -140,6 +141,7 @@ function App() {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/verify-email" element={<VerifyEmailPage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
               </Routes>
             </div>
           </div>
