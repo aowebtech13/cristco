@@ -79,7 +79,7 @@ export default function Home() {
                         </span>
                       </h6>
                       <div className="f12-medium text-White">
-                        +4% <span className="text-White">(30 days)</span>
+                         <span className="text-White">Available Balance</span>
                       </div>
                     </div>
                     <div className="chart-small">
@@ -165,7 +165,7 @@ export default function Home() {
                         </span>
                       </h6>
                       <div className="f12-medium">
-                        +4% <span className="text-Gray">(30 days)</span>
+                         <span className="text-Gray">Approved Withdrawal</span>
                       </div>
                     </div>
                     <div className="chart-small">
